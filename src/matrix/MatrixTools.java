@@ -1,5 +1,10 @@
 package matrix;
 
+import exception.InvalidMatrixException;
+import exception.MatricesNotMultipliableException;
+import exception.MatrixNotInitializedException;
+import exception.MatrixSpurNotAvailableException;
+
 import java.util.Arrays;
 
 public class MatrixTools {
@@ -11,20 +16,15 @@ public class MatrixTools {
     */
     public static int [] [] createMatrix(int m, int n) {
 
-        int firstIndex,secondIndex;
-        int[][] matrix;
-        int max;
-
          /*
         zero in the mistake case, i. e. with inadmissible
         values of m or N
          */
         if (m < 1 || n < 1) return null;
 
-        firstIndex = 0;
-        secondIndex = 0;
-        matrix = new int[m][n];
-        max = 10;
+        int  firstIndex = 0,secondIndex = 0;
+        int[][] matrix = new int[m][n];
+        int max = 10;
 
         /*
         initialized Array (matrix) of the dimension m×n
@@ -76,8 +76,6 @@ public class MatrixTools {
      */
     public static int[][] getTransposedMatrix(int[][] m) {
 
-        int column;
-        int line;
         /*
         the parametre matrix m is to be checked for zero
         references and the rectangle condition^1
@@ -86,6 +84,8 @@ public class MatrixTools {
         if (m == null) return null;
         for (int[] row : m) if (row == null) return null;
 
+        int column;
+        int line;
         line = m.length;
         column = m[0].length;
 
@@ -130,26 +130,29 @@ public class MatrixTools {
     The method should calculate the track of
     the matrix handed over as a parametre and return.
      */
-    public static int matrixSpur(int[][] matrix) {
+    public static int matrixSpur(int[][] matrix) throws MatrixSpurNotAvailableException, InvalidMatrixException, MatrixNotInitializedException {
         int column;
         int line;
-        int sum;
+        int sum = 0;
 
+        MatrixDimension matrixDimension = new MatrixDimension ( matrix );
         /*
         if matrix does not fulfil m squarely,
         or rectangle-condition^ not, back gift
         worth = 0
          */
+        if (matrixDimension.getHeight ()!= matrixDimension.getWidth ())
+            throw new MatrixSpurNotAvailableException (  );
+
         if (matrix == null) return 0;
         for (int[] row : matrix) if (row == null) return 0;
 
         line = matrix.length;
         column = matrix[0].length;
-        sum = 0;
 
-        if (line != column) return 0;
+        if (line != column) throw new MatrixSpurNotAvailableException (  );
 
-        for (int[] temp : matrix)if (temp.length != column) return 0;
+        for (int[] temp : matrix)if (temp.length != column) throw new MatrixSpurNotAvailableException (  );
 
         for(int i=0; i<line; i++) sum += matrix[i][i];
 
@@ -160,26 +163,29 @@ public class MatrixTools {
     The method should multiply both handed over matrixes
     and return the result matrix.
      */
-    public static int[][] matrixMul(int[][] a, int[][] b) {
+    public static int[][] matrixMul(int[][] a, int[][] b) throws InvalidMatrixException, MatrixNotInitializedException, MatricesNotMultipliableException {
+
+        new MatrixDimension ( a );
+        new MatrixDimension ( b );
 
         int [][] mulmatrix;
-        int linea;
-        int columna;
-        int columnb;
         /*
         in case of not multipliable matrixes, return value zero
          */
-        if (a == null || b == null) return null;
 
-        for (int[] row : a) if (row == null) return null;
+        //if (a == null || b == null) return null;
 
-        for (int[] row : b) if (row == null) return null;
+        //for (int[] row : a) if (row == null) return null;
 
-        if(b.length != a[0].length) return null;
+        //for (int[] row : b) if (row == null) return null;
+
+        // Check the dimensions of both matrices for compatibility and, if an error occurs,
+        // trigger a MatricesNotMultipliableException.
+        if(b.length != a[0].length) throw new MatricesNotMultipliableException (  );
         else {
-             linea = a.length;
-             columna = a[0].length;
-             columnb = b[0].length;
+            int linea = a.length;
+            int columna = a[0].length;
+            int columnb = b[0].length;
 
             mulmatrix = new int[linea][columnb];
             for (int i = 0; i < linea; i++) {
